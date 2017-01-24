@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <%- include('./bootstrap',{}) %>
+
+  </head>
+  <body>
+    <input type="button" value="create" id="create" />
+    <script type="text/javascript">
+$('#create').click(function(){
+  console.log('ok?');
+});
+    </script>
+  </body>
+</html>

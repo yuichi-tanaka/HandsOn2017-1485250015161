@@ -7,10 +7,14 @@
 	},
 	"dependencies": {
 		"express": "4.13.x",
+    "body-parser": "~1.15.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "ejs": "~2.4.1",
 		"cfenv": "1.0.x"
 	},
 	"repository": {},
 	"engines": {
 		"node": "4.x"
-	} 
+	}
 }
