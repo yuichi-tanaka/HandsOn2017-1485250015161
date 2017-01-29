@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <%- include('./bootstrap',{}) %>
+
+
+<style>
+svg {
+  width: 380px;
+  height: 240px;
+  border: 1px solid black;
+}
+.mark {
+  fill: red;
+  stroke: none;
+}
+
+.axis text {
+  font-family: sans-serif;
+  font-size: 11px;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: black;
+}
+</style>
+  </head>
+  <body>
+    <svg id="g1"></svg>
+
+    <script type="text/javascript">
+//dataset
+var dataSet = [
+  [30,40],[120,115],[125,90],[150,160],[300,190],
+  [60,40],[140,145],[165,110],[200,170],[240,190]
+]
+//param
+var svgWidth = 320;
+var svgHeight = 240;
+var offsetX = 30;
+var offsetY = 20;
+
+//rogic
+var circleElements = d3.select("#g1")
+.selectAll("circle")
+.data(dataSet)
+
+circleElements
+.enter()
+.append("circle")
+.attr("class", "mark")
+.attr("cx", function(d, i){ return d[0] + offsetX; })
+.attr("cy", function(d, i){ return d[1] - offsetY; })
+.attr("r", 5);
+
+//create random data function
+var updateData = function(data){
+  var result = data.map(function( d, i){
+    //random create
+    var x = Math.random() * svgWidth;
+    var y = Math.random() * svgHeight;
+    return [x, y]
+  });
+  return result;
+};
+//create Scale
+var createScale = function(){
+  var maxX = d3.max(dataSet, function(d,i){ return d[0];});
+  var maxY = d3.max(dataSet, function(d,i){ return d[1];});
+
+  var yScale = d3.scale.linear()
+    .domain([0, maxY])
+    .range([maxY, 0])
+
+  d3.select("#g1")
+  .append("g")
+  .attr("class","axis")
+  .attr("transform","translate(" + offsetX + ", " + (svgHeight - maxY - offsetY) + ")")
+  .call(
+      d3.svg.axis()
+      .scale(yScale)
+      .orient("left")
+      )
+
+  var xScale = d3.scale.linear()
+  .domain([0, maxX])
+  .range([0, maxX])
+
+  d3.select("#g1")
+  .append("g")
+  .attr("class","axis")
+  .attr("transform","translate(" + offsetX + ", " + (svgHeight - offsetY) + ")" )
+  .call(
+      d3.svg.axis()
+      .scale(xScale)
+      .orient("bottom")
+      )
+};
+createScale();
+
+//update graph
+var updateGraph = function(){
+  d3.select("#g1").selectAll("circle")
+    .data(dataSet).transition()
+    .attr("cx",function(d,i){ return d[0] + offsetX; })
+    .attr("cy",function(d,i){ return svgHeight - d[1] - offsetY; });
+};
+
+//update timer
+var t = setInterval(function(){
+  dataSet = updateData(dataSet);
+  updateGraph();
+},2000);
+
+    </script>
+  </body>
+</html>

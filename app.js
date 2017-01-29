@@ -34,5 +34,9 @@ app.listen(appEnv.port, '0.0.0.0', function() {
   console.log("server starting on " + appEnv.url);
 });
 
+// api path
 var search = require('./routes/search');
 app.use('/search', search);
+
+var viewer = require('./routes/viewer');
+app.use('/viewer', viewer);
