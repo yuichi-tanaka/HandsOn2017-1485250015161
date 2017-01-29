@@ -9,7 +9,7 @@
 <style>
 svg {
   width: 380px;
-  height: 240px;
+  height: 260px;
   border: 1px solid black;
 }
 .mark {
@@ -30,46 +30,22 @@ svg {
   </head>
   <body>
     <svg id="g1"></svg>
-
     <script type="text/javascript">
 //dataset
 var dataSet = [
-  [30,40],[120,115],[125,90],[150,160],[300,190],
-  [60,40],[140,145],[165,110],[200,170],[240,190]
 ]
 //param
 var svgWidth = 320;
-var svgHeight = 240;
+var svgHeight = 260;
 var offsetX = 30;
 var offsetY = 20;
 
-//rogic
-var circleElements = d3.select("#g1")
-.selectAll("circle")
-.data(dataSet)
-
-circleElements
-.enter()
-.append("circle")
-.attr("class", "mark")
-.attr("cx", function(d, i){ return d[0] + offsetX; })
-.attr("cy", function(d, i){ return d[1] - offsetY; })
-.attr("r", 5);
-
-//create random data function
-var updateData = function(data){
-  var result = data.map(function( d, i){
-    //random create
-    var x = Math.random() * svgWidth;
-    var y = Math.random() * svgHeight;
-    return [x, y]
-  });
-  return result;
-};
 //create Scale
 var createScale = function(){
-  var maxX = d3.max(dataSet, function(d,i){ return d[0];});
-  var maxY = d3.max(dataSet, function(d,i){ return d[1];});
+  var maxX = 320;
+  var maxY = 260;
+//  var maxX = d3.max(dataSet, function(d,i){ return d.val[0];});
+//  var maxY = d3.max(dataSet, function(d,i){ return d.val[1];});
 
   var yScale = d3.scale.linear()
     .domain([0, maxY])
@@ -100,21 +76,40 @@ var createScale = function(){
       )
 };
 createScale();
-
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
 //update graph
 var updateGraph = function(){
-  d3.select("#g1").selectAll("circle")
-    .data(dataSet).transition()
-    .attr("cx",function(d,i){ return d[0] + offsetX; })
-    .attr("cy",function(d,i){ return svgHeight - d[1] - offsetY; });
+  var g = d3.select("#g1").selectAll("g.circle")
+    .data(dataSet)
+    .enter()
+    .append("g")
+    .attr("class","circle");
+
+g
+.append("circle")
+.attr("class", "mark")
+.attr("r", 5)
+
+g
+.append("text").text(function(d){return d.lbl; });
+;
+
+d3.select("#g1").selectAll("g.circle").transition()
+  .attr("transform",function(d,i){ return "translate(" + (d.val[0] + offsetX) + ", " + (svgHeight - d.val[1] - offsetY ) + ")" });
 };
 
-//update timer
-var t = setInterval(function(){
-  dataSet = updateData(dataSet);
+var socket = io('http://localhost:6004');
+socket.on('connect', function(){});
+socket.on('event', function(data){});
+socket.on('disconnect', function(){});
+socket.on('update val', function(data){
+  dataSet = data;
   updateGraph();
-},2000);
-
+});
+socket.emit('chat message',"hoge");
+console.log('socket?');
     </script>
   </body>
 </html>
