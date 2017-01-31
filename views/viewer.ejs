@@ -8,13 +8,11 @@
 
 <style>
 svg {
-  width: 380px;
-  height: 260px;
+  width: 1200px;
+  height: 960px;
   border: 1px solid black;
 }
 .mark {
-  fill: red;
-  stroke: none;
 }
 
 .axis text {
@@ -35,15 +33,15 @@ svg {
 var dataSet = [
 ]
 //param
-var svgWidth = 320;
-var svgHeight = 260;
+var svgWidth = 940;
+var svgHeight = 820;
 var offsetX = 30;
 var offsetY = 20;
 
 //create Scale
 var createScale = function(){
-  var maxX = 320;
-  var maxY = 260;
+  var maxX = 940;
+  var maxY = 820;
 //  var maxX = d3.max(dataSet, function(d,i){ return d.val[0];});
 //  var maxY = d3.max(dataSet, function(d,i){ return d.val[1];});
 
@@ -76,6 +74,10 @@ var createScale = function(){
       )
 };
 createScale();
+
+
+//color
+var color = d3.scale.category20();
     </script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -87,13 +89,19 @@ var updateGraph = function(){
     .append("g")
     .attr("class","circle");
 
+
 g
 .append("circle")
 .attr("class", "mark")
+.attr("fill", function(d, i){ return color(i);})
+.attr("stroke", function(d, i){ return color(i);})
 .attr("r", 5)
+;
 
 g
-.append("text").text(function(d){return d.lbl; });
+.append("text")
+.text(function(d){return d.lbl; })
+.attr("transform",function(d,i){ return "translate( -20 , 15 )"; })
 ;
 
 d3.select("#g1").selectAll("g.circle").transition()
