@@ -108,7 +108,7 @@ d3.select("#g1").selectAll("g.circle").transition()
   .attr("transform",function(d,i){ return "translate(" + (d.val[0] + offsetX) + ", " + (svgHeight - d.val[1] - offsetY ) + ")" });
 };
 
-var socket = io('http://localhost:6004');
+var socket = io('https://handson2017.mybluemix.net');
 socket.on('connect', function(){});
 socket.on('event', function(data){});
 socket.on('disconnect', function(){});
