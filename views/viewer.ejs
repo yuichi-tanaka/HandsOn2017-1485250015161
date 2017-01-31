@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <%- include('./bootstrap',{}) %>
+
+
+<style>
+svg {
+  width: 1200px;
+  height: 960px;
+  border: 1px solid black;
+}
+.mark {
+}
+
+.axis text {
+  font-family: sans-serif;
+  font-size: 11px;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: black;
+}
+</style>
+  </head>
+  <body>
+    <svg id="g1"></svg>
+    <script type="text/javascript">
+//dataset
+var dataSet = [
+]
+//param
+var svgWidth = 940;
+var svgHeight = 820;
+var offsetX = 30;
+var offsetY = 20;
+
+//create Scale
+var createScale = function(){
+  var maxX = 940;
+  var maxY = 820;
+//  var maxX = d3.max(dataSet, function(d,i){ return d.val[0];});
+//  var maxY = d3.max(dataSet, function(d,i){ return d.val[1];});
+
+  var yScale = d3.scale.linear()
+    .domain([0, maxY])
+    .range([maxY, 0])
+
+  d3.select("#g1")
+  .append("g")
+  .attr("class","axis")
+  .attr("transform","translate(" + offsetX + ", " + (svgHeight - maxY - offsetY) + ")")
+  .call(
+      d3.svg.axis()
+      .scale(yScale)
+      .orient("left")
+      )
+
+  var xScale = d3.scale.linear()
+  .domain([0, maxX])
+  .range([0, maxX])
+
+  d3.select("#g1")
+  .append("g")
+  .attr("class","axis")
+  .attr("transform","translate(" + offsetX + ", " + (svgHeight - offsetY) + ")" )
+  .call(
+      d3.svg.axis()
+      .scale(xScale)
+      .orient("bottom")
+      )
+};
+createScale();
+
+
+//color
+var color = d3.scale.category20();
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+//update graph
+var updateGraph = function(){
+  var g = d3.select("#g1").selectAll("g.circle")
+    .data(dataSet)
+    .enter()
+    .append("g")
+    .attr("class","circle");
+
+
+g
+.append("circle")
+.attr("class", "mark")
+.attr("fill", function(d, i){ return color(i);})
+.attr("stroke", function(d, i){ return color(i);})
+.attr("r", 5)
+;
+
+g
+.append("text")
+.text(function(d){return d.lbl; })
+.attr("transform",function(d,i){ return "translate( -20 , 15 )"; })
+;
+
+d3.select("#g1").selectAll("g.circle").transition()
+  .attr("transform",function(d,i){ return "translate(" + (d.val[0] + offsetX) + ", " + (svgHeight - d.val[1] - offsetY ) + ")" });
+};
+
+var socket = io('http://localhost:6004');
+socket.on('connect', function(){});
+socket.on('event', function(data){});
+socket.on('disconnect', function(){});
+socket.on('update val', function(data){
+  dataSet = data;
+  updateGraph();
+});
+socket.emit('chat message',"hoge");
+console.log('socket?');
+    </script>
+  </body>
+</html>
